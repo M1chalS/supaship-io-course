@@ -3,7 +3,9 @@ import {createBrowserRouter, Outlet, RouterProvider} from "react-router-dom";
 import MessageBoard from "./MessageBoard.tsx";
 import AllPosts from "./AllPosts.tsx";
 import PostView from "./PostView.tsx";
-import Welcome from "./Welcome.tsx";
+import Welcome, {welcomeLoader} from "./Welcome.tsx";
+import {SupashipUserInfo, useSession} from "./use-session.ts";
+import {createContext} from "react";
 
 const router = createBrowserRouter([{
     path: "/",
@@ -26,6 +28,7 @@ const router = createBrowserRouter([{
         {
             path: "welcome",
             element: <Welcome/>,
+            loader: welcomeLoader,
         },
     ]
 }]);
@@ -34,9 +37,18 @@ export default function App() {
     return <RouterProvider router={router}/>;
 }
 
+export const UserContext = createContext<SupashipUserInfo>({
+    session: null,
+    profile: null,
+});
+
 function Layout() {
-    return <>
+    const supashipUserInfo = useSession();
+
+    return (<>
+    <UserContext.Provider value={supashipUserInfo}>
         <Navbar/>
         <Outlet/>
-    </>;
+    </UserContext.Provider>
+</>);
 }
